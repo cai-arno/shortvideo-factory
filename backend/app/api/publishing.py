@@ -11,14 +11,9 @@ from app.schemas.publishing import (
     PublishResponse,
     PublishListResponse,
 )
+from app.services.publisher import publish_task
 
 router = APIRouter()
-
-
-async def publish_task(record_id: int):
-    """后台发布任务"""
-    # TODO: 实现各平台发布逻辑
-    pass
 
 
 @router.post("", response_model=PublishResponse)
