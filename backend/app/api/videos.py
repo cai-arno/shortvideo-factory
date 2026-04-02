@@ -5,20 +5,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
 from app.models.video import Video, VideoStatus
+from app.models.script import Script
 from app.schemas.video import (
     VideoCreateRequest,
     VideoRenderRequest,
     VideoResponse,
     VideoListResponse,
 )
+from app.services.video_renderer import render_video_task
 
 router = APIRouter()
-
-
-async def render_video_task(video_id: int):
-    """后台渲染任务"""
-    # TODO: 实现 FFmpeg 渲染逻辑
-    pass
 
 
 @router.post("", response_model=VideoResponse)
@@ -27,7 +23,14 @@ async def create_video(
     session: AsyncSession = Depends(get_session),
 ):
     """创建视频剪辑任务"""
+    # 获取脚本标题作为视频标题
+    title = f"视频_{req.script_id}"
+    script = await session.get(Script, req.script_id)
+    if script:
+        title = f"视频_{script.id}_{script.title[:20]}"
+
     video = Video(
+        title=title,
         script_id=req.script_id,
         template_id=req.template_id,
         status=VideoStatus.PENDING,
