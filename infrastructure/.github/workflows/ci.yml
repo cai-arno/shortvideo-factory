@@ -34,8 +34,14 @@ jobs:
       - name: Type check
         run: cd backend && uv run mypy app
 
-      - name: Test
-        run: cd backend && uv run pytest --cov=app --cov-report=xml
+      - name: Test with coverage
+        run: cd backend && uv run pytest --cov=app --cov-report=xml --cov-report=term-missing -v
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: false
 
   # 前端测试
   frontend-test:
@@ -61,6 +67,32 @@ jobs:
 
       - name: Build
         run: cd frontend && npm run build
+
+  # Flutter 分析
+  flutter-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.5"
+          channel: "stable"
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            mobile/.dart_tool
+          key: flutter-${{ runner.os }}-${{ hashFiles('mobile/pubspec.lock') }}
+
+      - name: Install dependencies
+        run: cd mobile && flutter pub get
+
+      - name: Analyze
+        run: cd mobile && flutter analyze
 
   # Docker 构建
   docker:
