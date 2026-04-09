@@ -64,8 +64,8 @@ export function VideosPage() {
             <List.Item>
               <List.Item.Meta
                 avatar={
-                  <div className="w-20 h-28 bg-gray-100 rounded flex items-center justify-center">
-                    {video.thumbnail_path ? (
+                  <div className="w-20 h-28 bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+                    {video.thumbnail_path && !video.thumbnail_path.startsWith("shortvideo-") ? (
                       <img src={video.thumbnail_path} className="w-full h-full object-cover rounded" />
                     ) : (
                       <PlayCircleOutlined className="text-2xl text-gray-400" />
@@ -84,7 +84,7 @@ export function VideosPage() {
                       <Progress percent={video.progress || 0} size="small" />
                     )}
                     <div className="text-xs text-gray-500">
-                      时长: {video.duration}s | 尺寸: {video.width}x{video.height}
+                      时长: {video.duration}s | 尺寸: {video.width && video.height ? `${video.width}x${video.height}` : "-"}
                     </div>
                     {video.status === "completed" && (
                       <div className="flex gap-2">
@@ -122,16 +122,21 @@ export function VideosPage() {
         footer={null}
         width={800}
       >
-        {previewVideo?.video_path && (
+        {previewVideo?.output_path && !previewVideo.output_path.startsWith("shortvideo-") ? (
           <video
-            src={previewVideo.video_path}
+            src={previewVideo.output_path}
             controls
             autoPlay
             className="w-full"
             style={{ maxHeight: "60vh" }}
           />
+        ) : (
+          <div className="text-center py-8 text-gray-500">
+            <p className="text-lg mb-2">🎬 视频预览暂不可用</p>
+            <p className="text-sm">视频文件路径：{previewVideo?.output_path || "无"}</p>
+            <p className="text-xs text-gray-400 mt-2">（当前为演示模式，真实视频生成功能开发中）</p>
+          </div>
         )}
-        {!previewVideo?.video_path && <p>视频文件不存在</p>}
       </Modal>
     </div>
   )

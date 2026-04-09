@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
+from sqlalchemy import select, func
 from app.models.video import Video, VideoStatus
 from app.models.script import Script
 from app.schemas.video import (
@@ -92,3 +93,23 @@ async def get_video(video_id: int, session: AsyncSession = Depends(get_session))
     if not video:
         raise HTTPException(status_code=404, detail="Video not found")
     return video
+
+
+@router.delete("/{video_id}")
+async def delete_video(video_id: int, session: AsyncSession = Depends(get_session)):
+    """删除视频"""
+    from app.models.publishing import PublishRecord
+    from sqlalchemy import delete
+
+    video = await session.get(Video, video_id)
+    if not video:
+        raise HTTPException(status_code=404, detail="Video not found")
+
+    # 先删除关联的发布记录
+    await session.execute(
+        delete(PublishRecord).where(PublishRecord.video_id == video_id)
+    )
+
+    await session.delete(video)
+    await session.commit()
+    return {"message": "Video deleted"}
