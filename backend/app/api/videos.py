@@ -67,11 +67,11 @@ async def list_videos(
     session: AsyncSession = Depends(get_session),
 ):
     """获取视频列表"""
-    query = session.query(Video)
+    query = select(Video)
     if status:
         query = query.where(Video.status == status)
 
-    total = await session.scalar(query.count())
+    total = await session.scalar(select(func.count()).select_from(query.subquery()))
     videos = await session.execute(
         query.offset((page - 1) * page_size).limit(page_size).order_by(Video.created_at.desc())
     )

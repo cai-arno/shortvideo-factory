@@ -6,6 +6,7 @@ import { VideosPage } from "./pages/VideosPage"
 import { MaterialsPage } from "./pages/MaterialsPage"
 import { PublishingPage } from "./pages/PublishingPage"
 import { AnalyticsPage } from "./pages/AnalyticsPage"
+import { ComfyUIPage } from "./pages/ComfyUIPage"
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="materials" element={<MaterialsPage />} />
         <Route path="publishing" element={<PublishingPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="ai-video" element={<ComfyUIPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

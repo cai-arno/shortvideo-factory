@@ -17,7 +17,7 @@ async def list_templates(
     session: AsyncSession = Depends(get_session),
 ):
     """获取模板列表"""
-    query = session.query(Template).where(Template.is_active == True)
+    query = select(Template).where(Template.is_active == True)
     if template_type:
         query = query.where(Template.template_type == template_type)
     if script_type:

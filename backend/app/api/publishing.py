@@ -50,13 +50,13 @@ async def list_publish_records(
     session: AsyncSession = Depends(get_session),
 ):
     """获取发布记录列表"""
-    query = session.query(PublishRecord)
+    query = select(PublishRecord)
     if platform:
         query = query.where(PublishRecord.platform == platform)
     if status:
         query = query.where(PublishRecord.status == status)
 
-    total = await session.scalar(query.count())
+    total = await session.scalar(select(func.count()).select_from(query.subquery()))
     records = await session.execute(
         query.offset((page - 1) * page_size).limit(page_size).order_by(PublishRecord.created_at.desc())
     )

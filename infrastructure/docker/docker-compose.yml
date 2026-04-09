@@ -1,9 +1,8 @@
 version: "3.8"
 
 services:
-  # PostgreSQL 数据库
   postgres:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg15
     container_name: shortvideo-postgres
     environment:
       POSTGRES_USER: postgres
@@ -18,8 +17,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
-  # Redis 缓存
   redis:
     image: redis:7-alpine
     container_name: shortvideo-redis
@@ -32,18 +31,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
-  # 后端 API
   backend:
-    build:
-      context: ../backend
-      dockerfile: ../infrastructure/docker/Dockerfile.backend
+    image: shortvideo-backend:built
     container_name: shortvideo-backend
-    ports:
-      - "8000:8000"
+    network_mode: host
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/shortvideo
-      REDIS_URL: redis://redis:6379/0
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/shortvideo
+      REDIS_URL: redis://localhost:6379/0
     depends_on:
       postgres:
         condition: service_healthy
@@ -51,18 +47,14 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # 前端 (开发用热重载)
   frontend:
-    build:
-      context: ../frontend
-      dockerfile: ../infrastructure/docker/Dockerfile.frontend
+    image: shortvideo-frontend:latest
     container_name: shortvideo-frontend
     ports:
       - "3000:3000"
-    environment:
-      VITE_API_URL: http://localhost:8000
     depends_on:
       - backend
+    restart: unless-stopped
 
 volumes:
   postgres_data:

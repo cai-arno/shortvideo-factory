@@ -1,4 +1,4 @@
-import { Card, Row, Col, Statistic, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "antd"
+import { Card, Row, Col, Statistic } from "antd"
 import { useQuery } from "@tanstack/react-query"
 import { analyticsApi } from "../services/api"
 
@@ -73,23 +73,6 @@ export function AnalyticsPage() {
         </Col>
       </Row>
 
-      {/* 趋势图 */}
-      <Card size="small" title="近7天趋势">
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart
-            data={mergeTrendData(scriptsData, videosData, publishesData)}
-            margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
-          >
-            <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-            <YAxis tick={{ fontSize: 10 }} />
-            <Tooltip />
-            <Bar dataKey="scripts" name="脚本" fill="#6C5CE7" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="videos" name="视频" fill="#00B894" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="publishes" name="发布" fill="#0984E3" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
-
       {/* 平台分布 */}
       <Card size="small" title="各平台发布量">
         <Row gutter={[8, 8]}>
@@ -133,22 +116,4 @@ export function AnalyticsPage() {
       </Card>
     </div>
   )
-}
-
-/** 合并多条趋势数据为单一数组 */
-function mergeTrendData(scripts: any[], videos: any[], publishes: any[]) {
-  const dateSet = new Set<string>()
-  scripts.forEach(s => dateSet.add(s.date))
-  videos.forEach(v => dateSet.add(v.date))
-  publishes.forEach(p => dateSet.add(p.date))
-
-  const dateMap: Record<string, { date: string; scripts: number; videos: number; publishes: number }> = {}
-  Array.from(dateSet).sort().forEach(date => {
-    dateMap[date] = { date, scripts: 0, videos: 0, publishes: 0 }
-  })
-  scripts.forEach(s => { if (dateMap[s.date]) dateMap[s.date].scripts = s.count })
-  videos.forEach(v => { if (dateMap[v.date]) dateMap[v.date].videos = v.count })
-  publishes.forEach(p => { if (dateMap[p.date]) dateMap[p.date].publishes = p.count })
-
-  return Object.values(dateMap)
 }

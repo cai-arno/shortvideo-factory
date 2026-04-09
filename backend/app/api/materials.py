@@ -53,7 +53,7 @@ async def list_materials(
     session: AsyncSession = Depends(get_session),
 ):
     """获取素材列表"""
-    query = session.query(Material)
+    query = select(Material)
     if material_type:
         query = query.where(Material.material_type == material_type)
     if category:
@@ -61,7 +61,7 @@ async def list_materials(
     if keyword:
         query = query.where(Material.name.ilike(f"%{keyword}%"))
 
-    total = await session.scalar(query.count())
+    total = await session.scalar(select(func.count()).select_from(query.subquery()))
     materials = await session.execute(
         query.offset((page - 1) * page_size).limit(page_size).order_by(Material.created_at.desc())
     )

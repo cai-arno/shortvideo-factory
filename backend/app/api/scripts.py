@@ -44,13 +44,13 @@ async def list_scripts(
     session: AsyncSession = Depends(get_session),
 ):
     """获取脚本列表"""
-    query = session.query(Script)
+    query = select(Script)
     if status:
         query = query.where(Script.status == status)
     if script_type:
         query = query.where(Script.script_type == script_type)
 
-    total = await session.scalar(query.count())
+    total = await session.scalar(select(func.count()).select_from(query.subquery()))
     scripts = await session.execute(
         query.offset((page - 1) * page_size).limit(page_size).order_by(Script.created_at.desc())
     )

@@ -16,6 +16,7 @@ const menuItems = [
   { key: "/", icon: <HomeOutlined />, label: "首页" },
   { key: "/scripts", icon: <FileTextOutlined />, label: "脚本" },
   { key: "/videos", icon: <VideoCameraOutlined />, label: "视频" },
+  { key: "/ai-video", icon: <VideoCameraOutlined />, label: "AI视频" },
   { key: "/analytics", icon: <DashboardOutlined />, label: "看板" },
   { key: "/materials", icon: <AppstoreOutlined />, label: "素材" },
   { key: "/publishing", icon: <SendOutlined />, label: "发布" },
