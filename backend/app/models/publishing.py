@@ -26,6 +26,7 @@ class PublishRecord(SQLModel, table=True):
     __tablename__ = "publish_records"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
     video_id: int = Field(foreign_key="videos.id")
     platform: Platform
     status: PublishStatus = Field(default=PublishStatus.DRAFT)

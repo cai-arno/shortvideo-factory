@@ -17,6 +17,7 @@ class Template(SQLModel, table=True):
     __tablename__ = "templates"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
     name: str = Field(max_length=200)
     template_type: TemplateType
     file_path: str = Field(default="")         # 模板文件路径

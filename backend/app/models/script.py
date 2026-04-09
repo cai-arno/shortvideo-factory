@@ -26,6 +26,7 @@ class Script(SQLModel, table=True):
     __tablename__ = "scripts"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    tenant_id: Optional[int] = Field(default=None, foreign_key="tenants.id", index=True)
     title: str = Field(max_length=200)
     topic: str = Field(max_length=500)
     script_type: ScriptType = Field(default=ScriptType.PRODUCT_SHOWCASE)
