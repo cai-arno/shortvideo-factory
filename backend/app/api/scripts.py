@@ -1,9 +1,10 @@
 """脚本生成 API"""
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_session
+from sqlalchemy import select, func
 from app.models.script import Script, ScriptStatus, ScriptType
 from app.schemas.script import (
     ScriptGenerateRequest,
@@ -19,6 +20,7 @@ router = APIRouter()
 async def generate_script(
     req: ScriptGenerateRequest,
     session: AsyncSession = Depends(get_session),
+    request: Request = None,
 ):
     """AI 生成脚本"""
     generator = ScriptGenerator(session)
@@ -30,6 +32,11 @@ async def generate_script(
             quantity=req.quantity,
             style=req.style,
         )
+        # Set tenant_id from request
+        tenant_id = getattr(request.state, "tenant_id", None)
+        if tenant_id and script:
+            script.tenant_id = tenant_id
+            await session.commit()
         return script
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -42,9 +49,11 @@ async def list_scripts(
     status: Optional[ScriptStatus] = None,
     script_type: Optional[ScriptType] = None,
     session: AsyncSession = Depends(get_session),
+    request: Request = None,
 ):
     """获取脚本列表"""
-    query = select(Script)
+    tenant_id = getattr(request.state, "tenant_id", None)
+    query = select(Script).where(Script.tenant_id == tenant_id)
     if status:
         query = query.where(Script.status == status)
     if script_type:
