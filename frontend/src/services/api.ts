@@ -102,4 +102,12 @@ export const analyticsApi = {
   topVideos: (limit = 10) => api.get("/analytics/top", { params: { limit } }),
 }
 
+// ============ Auth ============
+export const authApi = {
+  sendCode: (phone: string) => api.post("/auth/phone/send-code", { phone }),
+
+  login: (phone: string, code: string) =>
+    api.post("/auth/phone/login", { phone, code }),
+}
+
 export default api

@@ -35,12 +35,14 @@ export function ScriptsPage() {
   const generateMutation = useMutation({
     mutationFn: scriptsApi.generate,
     onSuccess: () => {
+      message.destroy()
       message.success("脚本生成中...")
       setModalOpen(false)
       form.resetFields()
       queryClient.invalidateQueries({ queryKey: ["scripts"] })
     },
     onError: () => {
+      message.destroy()
       message.error("生成失败")
     },
   })
@@ -48,6 +50,7 @@ export function ScriptsPage() {
   const deleteMutation = useMutation({
     mutationFn: scriptsApi.delete,
     onSuccess: () => {
+      message.destroy()
       message.success("已删除")
       queryClient.invalidateQueries({ queryKey: ["scripts"] })
     },
@@ -59,7 +62,7 @@ export function ScriptsPage() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h1 className="text-lg font-semibold">脚本管理</h1>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)}>
+        <Button type="primary" icon={<PlusOutlined />} onClick={() => setModalOpen(true)} disabled={generateMutation.isPending}>
           生成脚本
         </Button>
       </div>
@@ -140,7 +143,7 @@ export function ScriptsPage() {
             <Select options={[{ value: 1, label: "1 条" }, { value: 3, label: "3 条" }, { value: 5, label: "5 条" }]} />
           </Form.Item>
 
-          <Button type="primary" htmlType="submit" block loading={generateMutation.isPending}>
+          <Button type="primary" htmlType="submit" block loading={generateMutation.isPending} disabled={generateMutation.isPending}>
             开始生成
           </Button>
         </Form>

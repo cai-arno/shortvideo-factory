@@ -7,10 +7,12 @@ import { MaterialsPage } from "./pages/MaterialsPage"
 import { PublishingPage } from "./pages/PublishingPage"
 import { AnalyticsPage } from "./pages/AnalyticsPage"
 import { ComfyUIPage } from "./pages/ComfyUIPage"
+import { LoginPage } from "./pages/LoginPage"
 
 export default function App() {
   return (
     <Routes>
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="scripts" element={<ScriptsPage />} />

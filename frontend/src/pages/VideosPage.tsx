@@ -1,4 +1,4 @@
-import { Card, List, Tag, Button, Progress, Empty } from "antd"
+import { Card, List, Tag, Button, Progress, Empty, message } from "antd"
 import { PlayCircleOutlined } from "@ant-design/icons"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { videosApi } from "../services/api"
@@ -22,7 +22,13 @@ export function VideosPage() {
   const renderMutation = useMutation({
     mutationFn: videosApi.render,
     onSuccess: () => {
+      message.destroy()
+      message.success("渲染任务已提交")
       queryClient.invalidateQueries({ queryKey: ["videos"] })
+    },
+    onError: () => {
+      message.destroy()
+      message.error("渲染失败")
     },
   })
 
@@ -73,8 +79,10 @@ export function VideosPage() {
                     {video.status === "pending" && (
                       <Button
                         size="small"
+                        type="primary"
                         onClick={() => renderMutation.mutate(video.id)}
                         loading={renderMutation.isPending}
+                        disabled={renderMutation.isPending}
                       >
                         开始渲染
                       </Button>

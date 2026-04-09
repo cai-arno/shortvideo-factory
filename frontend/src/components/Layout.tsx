@@ -1,5 +1,6 @@
+import { useEffect } from "react"
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
-import { Layout as AntLayout, Menu, Button } from "antd"
+import { Layout as AntLayout, Menu, Button, Modal } from "antd"
 import {
   HomeOutlined,
   FileTextOutlined,
@@ -7,6 +8,7 @@ import {
   AppstoreOutlined,
   SendOutlined,
   DashboardOutlined,
+  LogoutOutlined,
 } from "@ant-design/icons"
 import clsx from "clsx"
 
@@ -22,17 +24,35 @@ const menuItems = [
   { key: "/publishing", icon: <SendOutlined />, label: "发布" },
 ]
 
+function logout() {
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  window.location.href = "/login"
+}
+
 export function Layout() {
   const navigate = useNavigate()
   const location = useLocation()
+
+  useEffect(() => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      navigate("/login", { replace: true })
+    }
+  }, [navigate])
 
   return (
     <AntLayout className="min-h-screen bg-gray-50">
       {/* 顶部导航 */}
       <Header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 bg-white shadow-sm">
         <div className="text-lg font-bold text-purple-600">🎬 短视频工厂</div>
-        <Button type="primary" size="small" onClick={() => navigate("/scripts")}>
-          生成脚本
+        <Button
+          type="text"
+          size="small"
+          icon={<LogoutOutlined />}
+          onClick={logout}
+        >
+          退出
         </Button>
       </Header>
 
