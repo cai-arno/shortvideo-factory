@@ -16,7 +16,7 @@ from app.services.script_generator import ScriptGenerator
 router = APIRouter()
 
 
-@router.post("/generate", response_model=ScriptResponse)
+@router.post("/generate")
 async def generate_script(
     req: ScriptGenerateRequest,
     session: AsyncSession = Depends(get_session),
@@ -26,18 +26,22 @@ async def generate_script(
     generator = ScriptGenerator(session)
 
     try:
-        script = await generator.generate(
+        scripts = await generator.generate(
             topic=req.topic,
             script_type=req.script_type,
             quantity=req.quantity,
             style=req.style,
         )
-        # Set tenant_id from request
+        if not isinstance(scripts, list):
+            scripts = [scripts]
+        
         tenant_id = getattr(request.state, "tenant_id", None)
-        if tenant_id and script:
-            script.tenant_id = tenant_id
-            await session.commit()
-        return script
+        if tenant_id:
+            for script in scripts:
+                script.tenant_id = tenant_id
+        await session.commit()
+        
+        return {"scripts": scripts, "count": len(scripts)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
