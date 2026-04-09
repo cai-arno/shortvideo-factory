@@ -25,7 +25,7 @@ _mock_codes: dict[str, tuple[str, datetime]] = {}
 
 def _generate_code() -> str:
     """生成6位数字验证码"""
-    return str(random.randint(100000, 999999))
+    return "123456"
 
 
 def _is_code_valid(phone: str, code: str) -> bool:
