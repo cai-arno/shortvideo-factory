@@ -44,22 +44,22 @@ export function HomePage() {
       {/* 统计数据 */}
       <Row gutter={16}>
         <Col span={6}>
-          <Card size="small">
+          <Card size="small" hoverable onClick={() => navigate("/scripts")} className="cursor-pointer">
             <Statistic title="脚本" value={scriptsData?.data?.total || 0} prefix={<FileTextOutlined />} />
           </Card>
         </Col>
         <Col span={6}>
-          <Card size="small">
+          <Card size="small" hoverable onClick={() => navigate("/videos")} className="cursor-pointer">
             <Statistic title="视频" value={videosData?.data?.total || 0} prefix={<VideoCameraOutlined />} />
           </Card>
         </Col>
         <Col span={6}>
-          <Card size="small">
+          <Card size="small" hoverable onClick={() => navigate("/materials")} className="cursor-pointer">
             <Statistic title="素材" value="--" prefix={<AppstoreOutlined />} />
           </Card>
         </Col>
         <Col span={6}>
-          <Card size="small">
+          <Card size="small" hoverable onClick={() => navigate("/publishing")} className="cursor-pointer">
             <Statistic title="发布" value={publishData?.data?.total || 0} prefix={<SendOutlined />} />
           </Card>
         </Col>

@@ -1,5 +1,6 @@
-import { Card, List, Tag, Button, Progress, Empty, message } from "antd"
+import { Card, List, Tag, Button, Progress, Empty, message, Modal } from "antd"
 import { PlayCircleOutlined } from "@ant-design/icons"
+import { useState } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { videosApi } from "../services/api"
 
@@ -13,6 +14,7 @@ const statusMap: Record<string, { color: string; text: string }> = {
 export function VideosPage() {
   const queryClient = useQueryClient()
   const [page] = [1]
+  const [previewVideo, setPreviewVideo] = useState<any>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ["videos", page],
@@ -72,7 +74,7 @@ export function VideosPage() {
                       时长: {video.duration}s | 尺寸: {video.width}x{video.height}
                     </div>
                     {video.status === "completed" && (
-                      <Button size="small" type="primary">
+                      <Button size="small" type="primary" onClick={() => setPreviewVideo(video)}>
                         预览
                       </Button>
                     )}
@@ -94,6 +96,25 @@ export function VideosPage() {
           )}
         />
       )}
+
+      <Modal
+        open={!!previewVideo}
+        title="视频预览"
+        onCancel={() => setPreviewVideo(null)}
+        footer={null}
+        width={800}
+      >
+        {previewVideo?.video_path && (
+          <video
+            src={previewVideo.video_path}
+            controls
+            autoPlay
+            className="w-full"
+            style={{ maxHeight: "60vh" }}
+          />
+        )}
+        {!previewVideo?.video_path && <p>视频文件不存在</p>}
+      </Modal>
     </div>
   )
 }
