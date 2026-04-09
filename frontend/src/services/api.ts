@@ -50,6 +50,8 @@ export const videosApi = {
   render: (videoId: number) => api.post("/videos/render", { video_id: videoId }),
 
   get: (id: number) => api.get(`/videos/${id}`),
+
+  delete: (id: number) => api.delete(`/videos/${id}`),
 }
 
 // ============ Materials ============
@@ -89,6 +91,8 @@ export const publishingApi = {
     api.post("/publishing", data),
 
   get: (id: number) => api.get(`/publishing/${id}`),
+
+  delete: (id: number) => api.delete(`/publishing/${id}`),
 }
 
 // ============ Analytics ============

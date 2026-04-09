@@ -34,6 +34,19 @@ export function VideosPage() {
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: videosApi.delete,
+    onSuccess: () => {
+      message.destroy()
+      message.success("视频已删除")
+      queryClient.invalidateQueries({ queryKey: ["videos"] })
+    },
+    onError: () => {
+      message.destroy()
+      message.error("删除失败")
+    },
+  })
+
   const videos = data?.data?.items || []
 
   return (
@@ -74,9 +87,14 @@ export function VideosPage() {
                       时长: {video.duration}s | 尺寸: {video.width}x{video.height}
                     </div>
                     {video.status === "completed" && (
-                      <Button size="small" type="primary" onClick={() => setPreviewVideo(video)}>
-                        预览
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button size="small" type="primary" onClick={() => setPreviewVideo(video)}>
+                          预览
+                        </Button>
+                        <Button size="small" danger onClick={() => deleteMutation.mutate(video.id)}>
+                          删除
+                        </Button>
+                      </div>
                     )}
                     {video.status === "pending" && (
                       <Button

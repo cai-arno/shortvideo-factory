@@ -1,6 +1,6 @@
-import { Card, List, Tag, Button, Empty } from "antd"
+import { Card, List, Tag, Button, Empty, message } from "antd"
 import { SendOutlined, CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { publishingApi } from "../services/api"
 
 const platformMap: Record<string, { name: string; color: string }> = {
@@ -20,11 +20,25 @@ const statusMap: Record<string, { color: string; text: string }> = {
 }
 
 export function PublishingPage() {
+  const queryClient = useQueryClient()
   const [page] = [1]
 
   const { data, isLoading } = useQuery({
     queryKey: ["publishing", page],
     queryFn: () => publishingApi.list({ page, page_size: 20 }),
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: publishingApi.delete,
+    onSuccess: () => {
+      message.destroy()
+      message.success("发布记录已删除")
+      queryClient.invalidateQueries({ queryKey: ["publishing"] })
+    },
+    onError: () => {
+      message.destroy()
+      message.error("删除失败")
+    },
   })
 
   const records = data?.data?.items || []
@@ -41,7 +55,19 @@ export function PublishingPage() {
         <List
           dataSource={records}
           renderItem={(record: any) => (
-            <List.Item>
+            <List.Item
+              actions={[
+                <Button
+                  key="delete"
+                  size="small"
+                  danger
+                  onClick={() => deleteMutation.mutate(record.id)}
+                  loading={deleteMutation.isPending}
+                >
+                  删除
+                </Button>,
+              ]}
+            >
               <List.Item.Meta
                 avatar={
                   <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-lg">

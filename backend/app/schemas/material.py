@@ -1,7 +1,7 @@
 """素材 API Schema"""
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, field_validator, Field
 
 from app.models.material import MaterialType
 
@@ -31,6 +31,17 @@ class MaterialResponse(BaseModel):
     width: Optional[int] = None
     height: Optional[int] = None
     tags: List[str]
+    
+    @field_validator("tags", mode="before")
+    @classmethod
+    def parse_tags(cls, v):
+        if isinstance(v, str):
+            import json
+            try:
+                return json.loads(v)
+            except:
+                return []
+        return v
     category: str
     created_at: datetime
 
